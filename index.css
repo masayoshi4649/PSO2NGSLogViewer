@@ -1,0 +1,24 @@
+body {
+    margin          : 0;
+    padding         : 10px;
+    background-color: rgb(0, 0, 0);
+    color           : aqua;
+}
+
+#gridArea {
+    display: flex;
+}
+
+.grid {
+    height: 95vh;
+    margin: 0 1vw;
+    border: solid 1px #ddd;
+}
+
+#chatlog {
+    width: 47vw;
+}
+
+#actionlog {
+    width: 47vw;
+}
