@@ -73,7 +73,7 @@ const ipcRendererStyle = require("electron").ipcRenderer;
 
 let styleConf = null;
 
-ipcRendererStyle.on("gridSettingReply", (e, data) => {
+ipcRendererStyle.on("gridSetting", (e, data) => {
     styleConf = data;
 
     // ログ変色時間
