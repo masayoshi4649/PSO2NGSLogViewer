@@ -10,8 +10,6 @@ const setting = require(__dirname + "/setting/setting");
 let chatLogJSON = [];
 let actionLogJSON = [];
 
-
-
 const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
 const maxDisplayTime = Math.max(...viewTime);
 
