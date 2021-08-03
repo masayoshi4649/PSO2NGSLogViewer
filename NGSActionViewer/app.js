@@ -429,14 +429,12 @@ function ignoreChat(setting, data) {
             return true
         }
     }
-
     // 無視_カットイン
     if (setting["ignoreCutin"] == true) {
         if (data["content"].indexOf("/ci") != -1) {
             return true
         }
     }
-
     return false
 }
 
@@ -468,3 +466,4 @@ function ignoreAction(setting, data) {
     }
     return false
 }
+// CommitTest
