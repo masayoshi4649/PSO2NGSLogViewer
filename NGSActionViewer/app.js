@@ -12,9 +12,9 @@ let actionLogJSON = [];
 
 // デフォルト表示期間(時間)
 let displaySelectTime = 1;
-const maxDisplayTime = 720;
 
 const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
+const maxDisplayTime = Math.max(...viewTime);
 
 const menuTemplate = [
     constParams.menu_file,
@@ -395,42 +395,48 @@ function menuFileTime() {
 
 // チャットログ_無視オプション
 function ignoreChat(setting, data) {
-    // 無視_ロビアク(/la)(/cla)
+    // 無視_ロビアク
     if (setting["ignoreLobyAction"] == true) {
         if (data["content"].indexOf("/la") != -1 || data["content"].indexOf("/cla") != -1) {
             return true
         }
     }
+
     // 無視_マイファッション
     if (setting["ignoreMyFashion"] == true) {
         if (data["content"].indexOf("/mf") != -1) {
             return true
         }
     }
+
     // 無視_スタンプ
     if (setting["ignoreStamp"] == true) {
         if (data["content"].indexOf("/stamp") != -1) {
             return true
         }
     }
+
     // 無視_uioff
     if (setting["ignoreUioff"] == true) {
         if (data["content"].indexOf("/uioff") != -1) {
             return true
         }
     }
+
     // 無視_カメラ目線
     if (setting["ignoreCameraEye"] == true) {
         if (data["content"].indexOf("/ce") != -1) {
             return true
         }
     }
+
     // 無視_カットイン
     if (setting["ignoreCutin"] == true) {
         if (data["content"].indexOf("/ci") != -1) {
             return true
         }
     }
+
     return false
 }
 
@@ -442,23 +448,27 @@ function ignoreAction(setting, data) {
             return true
         }
     }
+
     // 無視_取得
     if (setting["ignoreGet"] == true) {
         if (data["action_type"] == "[Pickup]") {
             return true
         }
     }
+
     // 無視_レスタサイン
     if (setting["ignoreRestaSign"] == true) {
         if (data["item_name"] == "RestaSign") {
             return true
         }
     }
+
     // 無視_リバーサーサイン
     if (setting["ignoreRestaSign"] == true) {
         if (data["item_name"] == "ReverserSign") {
             return true
         }
     }
+
     return false
 }
