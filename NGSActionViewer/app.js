@@ -395,48 +395,42 @@ function menuFileTime() {
 
 // チャットログ_無視オプション
 function ignoreChat(setting, data) {
-    // 無視_ロビアク
+    // 無視_ロビアク(/la)(/cla)
     if (setting["ignoreLobyAction"] == true) {
         if (data["content"].indexOf("/la") != -1 || data["content"].indexOf("/cla") != -1) {
             return true
         }
     }
-
     // 無視_マイファッション
     if (setting["ignoreMyFashion"] == true) {
         if (data["content"].indexOf("/mf") != -1) {
             return true
         }
     }
-
     // 無視_スタンプ
     if (setting["ignoreStamp"] == true) {
         if (data["content"].indexOf("/stamp") != -1) {
             return true
         }
     }
-
     // 無視_uioff
     if (setting["ignoreUioff"] == true) {
         if (data["content"].indexOf("/uioff") != -1) {
             return true
         }
     }
-
     // 無視_カメラ目線
     if (setting["ignoreCameraEye"] == true) {
         if (data["content"].indexOf("/ce") != -1) {
             return true
         }
     }
-
     // 無視_カットイン
     if (setting["ignoreCutin"] == true) {
         if (data["content"].indexOf("/ci") != -1) {
             return true
         }
     }
-
     return false
 }
 
