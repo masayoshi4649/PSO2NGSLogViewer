@@ -448,27 +448,23 @@ function ignoreAction(setting, data) {
             return true
         }
     }
-
     // 無視_取得
     if (setting["ignoreGet"] == true) {
         if (data["action_type"] == "[Pickup]") {
             return true
         }
     }
-
     // 無視_レスタサイン
     if (setting["ignoreRestaSign"] == true) {
         if (data["item_name"] == "RestaSign") {
             return true
         }
     }
-
     // 無視_リバーサーサイン
     if (setting["ignoreRestaSign"] == true) {
         if (data["item_name"] == "ReverserSign") {
             return true
         }
     }
-
     return false
 }
