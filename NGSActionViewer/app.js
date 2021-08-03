@@ -12,9 +12,9 @@ let actionLogJSON = [];
 
 // デフォルト表示期間(時間)
 let displaySelectTime = 1;
-const maxDisplayTime = 720;
 
 const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
+const maxDisplayTime = Math.max(...viewTime);
 
 const menuTemplate = [
     constParams.menu_file,
