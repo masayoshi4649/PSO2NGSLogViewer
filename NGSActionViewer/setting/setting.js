@@ -51,8 +51,19 @@ function chatLogSetting() {
     return returnJSON;
 }
 
+
+function writeActionLogSetting(jsondata) {
+    fs.writeFileSync(__dirname + "\\user\\actionLog.json", JSON.stringify(jsondata, null, "\t"));
+}
+
+function writeChatLogSetting(jsondata) {
+    fs.writeFileSync(__dirname + "\\user\\chatLog.json", JSON.stringify(jsondata, null, "\t"));
+}
+
 module.exports = {
     gridSetting,
     actionLogSetting,
-    chatLogSetting
+    chatLogSetting,
+    writeActionLogSetting,
+    writeChatLogSetting
 }
