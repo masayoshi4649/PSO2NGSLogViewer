@@ -429,14 +429,12 @@ function ignoreChat(setting, data) {
             return true
         }
     }
-
     // 無視_カットイン
     if (setting["ignoreCutin"] == true) {
         if (data["content"].indexOf("/ci") != -1) {
             return true
         }
     }
-
     return false
 }
 
@@ -448,27 +446,24 @@ function ignoreAction(setting, data) {
             return true
         }
     }
-
     // 無視_取得
     if (setting["ignoreGet"] == true) {
         if (data["action_type"] == "[Pickup]") {
             return true
         }
     }
-
     // 無視_レスタサイン
     if (setting["ignoreRestaSign"] == true) {
         if (data["item_name"] == "RestaSign") {
             return true
         }
     }
-
     // 無視_リバーサーサイン
     if (setting["ignoreRestaSign"] == true) {
         if (data["item_name"] == "ReverserSign") {
             return true
         }
     }
-
     return false
 }
+// CommitTest
