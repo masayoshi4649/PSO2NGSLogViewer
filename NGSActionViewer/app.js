@@ -10,11 +10,11 @@ const setting = require(__dirname + "/setting/setting");
 let chatLogJSON = [];
 let actionLogJSON = [];
 
-// デフォルト表示期間(時間)
-let displaySelectTime = 1;
-
 const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
 const maxDisplayTime = Math.max(...viewTime);
+
+// デフォルト表示期間(時間)
+let displaySelectTime = Math.min(...viewTime);;
 
 const menuTemplate = [
     constParams.menu_file,
@@ -466,4 +466,3 @@ function ignoreAction(setting, data) {
     }
     return false
 }
-// CommitTest
