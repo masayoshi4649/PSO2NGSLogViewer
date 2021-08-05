@@ -1,0 +1,14 @@
+{
+    "bgColor": "#1E1E1E",
+    "titleColor": "#FFFFFF",
+    "titlebgColor": "#02264D",
+    "defbgColor": "696969",
+    "defColor": "#FF0000",
+    "getbgColor": "#1E1E1E",
+    "getColor": "#FFFFFF",
+    "sellbgColor": "#4d0000",
+    "sellColor": "#00FF00",
+    "recentTime": 1,
+    "recentColor": "#00FFFF",
+    "borderColor": "#4d0000"
+}
