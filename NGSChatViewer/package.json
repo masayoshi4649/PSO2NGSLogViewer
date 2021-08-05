@@ -1,5 +1,5 @@
 {
-  "name": "NGSActionViewer",
+  "name": "NGSChatViewer",
   "version": "2021.07.14",
   "main": "app.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "csvtojson": "^2.0.10"
   },
   "devDependencies": {
-    "electron": "^13.1.6",
+    "electron": "^13.1.7",
     "electron-builder": "^22.11.7"
   }
 }

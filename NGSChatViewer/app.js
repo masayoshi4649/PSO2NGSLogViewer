@@ -1,19 +1,20 @@
 "use strict";
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 let mainWindow = null;
-let settingWindow = null;
+let actionSettingWindow = null;
 const chokidar = require("chokidar");
-const constParams = require("./constParams");
-const csvParse = require("./csvParse");
+const constParams = require(__dirname + "/constParams");
+const csvParse = require(__dirname + "/csvParse");
+const setting = require(__dirname + "/setting/setting");
 
 let chatLogJSON = [];
 let actionLogJSON = [];
 
-// デフォルト表示期間(時間)
-let displaySelectTime = 1;
-const maxDisplayTime = 720;
-
 const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
+const maxDisplayTime = Math.max(...viewTime);
+
+// デフォルト表示期間(時間)
+let displaySelectTime = Math.min(...viewTime);;
 
 const menuTemplate = [
     constParams.menu_file,
@@ -24,9 +25,9 @@ const menuTemplate = [
     {
         label: "設定",
         submenu: [{
-            label: "チャットログ設定",
+            label: "アクションログ設定",
             click() {
-                openSettingWindow();
+                openActionSettingWindow();
             }
         }]
     },
@@ -70,6 +71,7 @@ app.on("ready", function () {
 
     // 画面読み込み後一度だけ
     mainWindow.once('ready-to-show', () => {
+        ipcSendGridStyle();
         sendChatLog();
         sendActionLog();
     })
@@ -80,8 +82,8 @@ app.on("ready", function () {
     });
 });
 
-function openSettingWindow() {
-    settingWindow = new BrowserWindow({
+function openActionSettingWindow() {
+    actionSettingWindow = new BrowserWindow({
         parent: mainWindow,
         modal: true,
         icon: __dirname + constParams.iconPath,
@@ -93,10 +95,10 @@ function openSettingWindow() {
         alwaysOnTop: true
     });
 
-    // settingWindow.setMenu(null);
-    // settingWindow.setIgnoreMouseEvents(true);
+    // actionSettingWindow.setMenu(null);
+    // actionSettingWindow.setIgnoreMouseEvents(true);
 
-    settingWindow.loadURL("file://" + __dirname + "/setting.html");
+    actionSettingWindow.loadURL("file://" + __dirname + "/view/actionSetting.html");
 }
 
 
@@ -108,21 +110,26 @@ function sendChatLog() {
         if (item.endTime > fromTime) return true;
     });
 
+    const chatSetting = setting.chatLogSetting();
+
     let sendChatData = [];
     for (let i = 0; i < chatDataLvFile.length; i++) {
         let innerData = chatDataLvFile[i].data;
         for (let j = 0; j < innerData.length; j++) {
             let rowTime = new Date(innerData[j].log_time);
             if (rowTime > fromTime) {
-                sendChatData.push({
-                    logTime: rowTime,
-                    dispDate: getDispDate(rowTime, "YYYY-MM-DD"),
-                    dispTime: getDispTime(rowTime, "hh:mm:ss"),
-                    playerId: innerData[j].player_id,
-                    playerName: innerData[j].player_name,
-                    sendTo: innerData[j].send_to,
-                    content: innerData[j].content
-                });
+                let ignoreFlag = ignoreChat(chatSetting, innerData[j])
+                if (ignoreFlag == false) {
+                    sendChatData.push({
+                        logTime: rowTime,
+                        dispDate: getDispDate(rowTime, "YYYY-MM-DD"),
+                        dispTime: getDispTime(rowTime, "hh:mm:ss"),
+                        playerId: innerData[j].player_id,
+                        playerName: innerData[j].player_name,
+                        sendTo: innerData[j].send_to,
+                        content: innerData[j].content
+                    });
+                }
             }
         }
     }
@@ -143,6 +150,8 @@ function sendActionLog() {
         if (item.endTime > fromTime) return true;
     });
 
+    const actionSetting = setting.actionLogSetting();
+
     let sendActionData = [];
     for (let i = 0; i < actionDataLvFile.length; i++) {
         let innerData = actionDataLvFile[i].data;
@@ -151,22 +160,27 @@ function sendActionLog() {
             let actionTypeIsPickup = innerData[j].action_type == "[Pickup]";
             let actionTypeIsDiscard = innerData[j].action_type == "[Discard]";
             if (rowTime > fromTime && innerData[j].item_name != "" && (actionTypeIsPickup == true || actionTypeIsDiscard == true)) {
-                let actionTypeStr;
-                if (actionTypeIsPickup == true) {
-                    actionTypeStr = "取得";
-                } else if (actionTypeIsDiscard == true) {
-                    actionTypeStr = "売却";
-                }
 
-                sendActionData.push({
-                    logTime: rowTime,
-                    dispDate: getDispDate(rowTime, "YYYY-MM-DD"),
-                    dispTime: getDispTime(rowTime, "hh:mm:ss"),
-                    playerId: innerData[j].player_id,
-                    playerName: innerData[j].player_name,
-                    actionType: actionTypeStr,
-                    itemName: innerData[j].item_name
-                });
+                let ignoreFlag = ignoreAction(actionSetting, innerData[j])
+
+                if (ignoreFlag == false) {
+                    let actionTypeStr;
+                    if (actionTypeIsPickup == true) {
+                        actionTypeStr = "取得";
+                    } else if (actionTypeIsDiscard == true) {
+                        actionTypeStr = "売却";
+                    }
+
+                    sendActionData.push({
+                        logTime: rowTime,
+                        dispDate: getDispDate(rowTime, "YYYY-MM-DD"),
+                        dispTime: getDispTime(rowTime, "hh:mm:ss"),
+                        playerId: innerData[j].player_id,
+                        playerName: innerData[j].player_name,
+                        actionType: actionTypeStr,
+                        itemName: innerData[j].item_name
+                    });
+                }
             }
         }
     }
@@ -224,6 +238,11 @@ function getDispTime(data, format) {
     format = format.replace(/mm/g, ('0' + dateData.getMinutes()).slice(-2));
     format = format.replace(/ss/g, ('0' + dateData.getSeconds()).slice(-2));
     return format;
+}
+
+// IPC送信_グリッドスタイル
+function ipcSendGridStyle() {
+    mainWindow.webContents.send("gridSetting", setting.gridSetting());
 }
 
 // IPC送信_新規チャット送信
@@ -372,4 +391,78 @@ function menuFileTime() {
         });
     }
     return submenuArr;
+}
+
+// チャットログ_無視オプション
+function ignoreChat(setting, data) {
+    // 無視_ロビアク
+    if (setting["ignoreLobyAction"] == true) {
+        if (data["content"].indexOf("/la") != -1 || data["content"].indexOf("/cla") != -1) {
+            return true
+        }
+    }
+
+    // 無視_マイファッション
+    if (setting["ignoreMyFashion"] == true) {
+        if (data["content"].indexOf("/mf") != -1) {
+            return true
+        }
+    }
+
+    // 無視_スタンプ
+    if (setting["ignoreStamp"] == true) {
+        if (data["content"].indexOf("/stamp") != -1) {
+            return true
+        }
+    }
+
+    // 無視_uioff
+    if (setting["ignoreUioff"] == true) {
+        if (data["content"].indexOf("/uioff") != -1) {
+            return true
+        }
+    }
+
+    // 無視_カメラ目線
+    if (setting["ignoreCameraEye"] == true) {
+        if (data["content"].indexOf("/ce") != -1) {
+            return true
+        }
+    }
+    // 無視_カットイン
+    if (setting["ignoreCutin"] == true) {
+        if (data["content"].indexOf("/ci") != -1) {
+            return true
+        }
+    }
+    return false
+}
+
+// チャットログ_無視オプション
+function ignoreAction(setting, data) {
+    // 無視_売却
+    if (setting["ignoreSell"] == true) {
+        if (data["action_type"] == "[Discard]") {
+            return true
+        }
+    }
+    // 無視_取得
+    if (setting["ignoreGet"] == true) {
+        if (data["action_type"] == "[Pickup]") {
+            return true
+        }
+    }
+    // 無視_レスタサイン
+    if (setting["ignoreRestaSign"] == true) {
+        if (data["item_name"] == "RestaSign") {
+            return true
+        }
+    }
+    // 無視_リバーサーサイン
+    if (setting["ignoreRestaSign"] == true) {
+        if (data["item_name"] == "ReverserSign") {
+            return true
+        }
+    }
+    return false
 }
