@@ -7,7 +7,6 @@ const constParams = require(__dirname + "/constParams");
 const csvParse = require(__dirname + "/csvParse");
 const setting = require(__dirname + "/setting/setting");
 
-let chatLogJSON = [];
 let actionLogJSON = [];
 
 const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
@@ -56,7 +55,7 @@ app.on("ready", function () {
     mainWindow = new BrowserWindow({
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
-        width: 1366,
+        width: 683,
         height: 768,
         frame: true,
         // opacity: 0.8,
@@ -72,7 +71,6 @@ app.on("ready", function () {
     // 画面読み込み後一度だけ
     mainWindow.once('ready-to-show', () => {
         ipcSendGridStyle();
-        sendChatLog();
         sendActionLog();
     })
 
@@ -99,47 +97,6 @@ function openActionSettingWindow() {
     // actionSettingWindow.setIgnoreMouseEvents(true);
 
     actionSettingWindow.loadURL("file://" + __dirname + "/view/actionSetting.html");
-}
-
-
-// IPC送信_チャットログ
-function sendChatLog() {
-    let fromTime = getFromTime();
-
-    let chatDataLvFile = chatLogJSON.filter(function (item) {
-        if (item.endTime > fromTime) return true;
-    });
-
-    const chatSetting = setting.chatLogSetting();
-
-    let sendChatData = [];
-    for (let i = 0; i < chatDataLvFile.length; i++) {
-        let innerData = chatDataLvFile[i].data;
-        for (let j = 0; j < innerData.length; j++) {
-            let rowTime = new Date(innerData[j].log_time);
-            if (rowTime > fromTime) {
-                let ignoreFlag = ignoreChat(chatSetting, innerData[j])
-                if (ignoreFlag == false) {
-                    sendChatData.push({
-                        logTime: rowTime,
-                        dispDate: getDispDate(rowTime, "YYYY-MM-DD"),
-                        dispTime: getDispTime(rowTime, "hh:mm:ss"),
-                        playerId: innerData[j].player_id,
-                        playerName: innerData[j].player_name,
-                        sendTo: innerData[j].send_to,
-                        content: innerData[j].content
-                    });
-                }
-            }
-        }
-    }
-    // DESCソート
-    sendChatData.sort(function (a, b) {
-        if (a.logTime > b.logTime) return -1
-        if (a.logTime < b.logTime) return 1
-        return 0
-    });
-    mainWindow.webContents.send("chatLogJSON", sendChatData);
 }
 
 // IPC送信_アクションログ
@@ -245,11 +202,6 @@ function ipcSendGridStyle() {
     mainWindow.webContents.send("gridSetting", setting.gridSetting());
 }
 
-// IPC送信_新規チャット送信
-function ipcSendNewChat(data) {
-    mainWindow.webContents.send("newChat", data);
-}
-
 // IPC送信_新規Action送信
 function ipcSendNewAction(data) {
     let sendNewActionData = [];
@@ -260,7 +212,6 @@ function ipcSendNewAction(data) {
 // IPC受信_表示期間変更
 function changeLogTerm(value) {
     displaySelectTime = value;
-    sendChatLog();
     sendActionLog();
 }
 
@@ -272,58 +223,7 @@ function watchFiles() {
     }).on("all", async (e, path) => {
         // ファイル名
         let fileName = path.replace(LOG_NGS, "");
-
-        if (fileName.startsWith("ChatLog") == true) {
-            // チャットログ
-            if (e != "unlink") {
-                let data = await csvParse.readChatLog(path);
-                if (data.length != 0) {
-                    let pushData = {
-                        "fileName": fileName,
-                        "startTime": new Date(data[0].log_time),
-                        "endTime": new Date(data[data.length - 1].log_time),
-                        "data": data
-                    };
-
-                    if (e == "add") {
-                        if (pushData.endTime < getHoldTime()) {
-                            pushData["data"] = [];
-                        }
-                        chatLogJSON.push(pushData);
-                    } else if (e == "change") {
-
-                        // 前のデータ
-                        let olddata = chatLogJSON.filter(function (item) {
-                            if (item.fileName == fileName) return true;
-                        });
-
-                        // 書き換え
-                        chatLogJSON = chatLogJSON.filter(function (item) {
-                            if (item.fileName != fileName) return true;
-                        });
-                        chatLogJSON.push(pushData);
-
-                        // 差分
-                        let diffJSON = [];
-                        if (olddata.length != 0) {
-                            let diffLength = data.length - olddata[0].data.length;
-                            for (let i = 0; i < diffLength; i++) {
-                                diffJSON.push(data[data.length - 1 - i]);
-                            }
-                        } else {
-                            diffJSON.push(data);
-                        }
-
-                        ipcSendNewChat(diffJSON);
-                    }
-                }
-            } else if (e == "unlink") {
-                chatLogJSON = chatLogJSON.filter(function (item) {
-                    if (item.fileName != fileName) return true;
-                });
-            }
-            sendChatLog();
-        } else if (fileName.startsWith("ActionLog") == true) {
+        if (fileName.startsWith("ActionLog") == true) {
             // アクションログ
             if (e != "unlink") {
                 let data = await csvParse.readActionLog(path);
@@ -393,52 +293,7 @@ function menuFileTime() {
     return submenuArr;
 }
 
-// チャットログ_無視オプション
-function ignoreChat(setting, data) {
-    // 無視_ロビアク
-    if (setting["ignoreLobyAction"] == true) {
-        if (data["content"].indexOf("/la") != -1 || data["content"].indexOf("/cla") != -1) {
-            return true
-        }
-    }
-
-    // 無視_マイファッション
-    if (setting["ignoreMyFashion"] == true) {
-        if (data["content"].indexOf("/mf") != -1) {
-            return true
-        }
-    }
-
-    // 無視_スタンプ
-    if (setting["ignoreStamp"] == true) {
-        if (data["content"].indexOf("/stamp") != -1) {
-            return true
-        }
-    }
-
-    // 無視_uioff
-    if (setting["ignoreUioff"] == true) {
-        if (data["content"].indexOf("/uioff") != -1) {
-            return true
-        }
-    }
-
-    // 無視_カメラ目線
-    if (setting["ignoreCameraEye"] == true) {
-        if (data["content"].indexOf("/ce") != -1) {
-            return true
-        }
-    }
-    // 無視_カットイン
-    if (setting["ignoreCutin"] == true) {
-        if (data["content"].indexOf("/ci") != -1) {
-            return true
-        }
-    }
-    return false
-}
-
-// チャットログ_無視オプション
+// アクションログ_無視オプション
 function ignoreAction(setting, data) {
     // 無視_売却
     if (setting["ignoreSell"] == true) {
