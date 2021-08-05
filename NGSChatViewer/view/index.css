@@ -22,7 +22,7 @@ body {
 /* スクロールのつまみ部分の設定 */
 ::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    background   : #1959A8;
+    background   : #ca1d49;
 }
 
 /* スクロールバー↑ */
@@ -36,12 +36,4 @@ body {
     margin: 0 1vw;
     border: solid 1px #ddd;
     resize: both;
-}
-
-#chatlog {
-    width: 47vw;
-}
-
-#actionlog {
-    width: 47vw;
 }

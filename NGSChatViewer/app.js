@@ -1,14 +1,13 @@
 "use strict";
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 let mainWindow = null;
-let actionSettingWindow = null;
+let chatSettingWindow = null;
 const chokidar = require("chokidar");
 const constParams = require(__dirname + "/constParams");
 const csvParse = require(__dirname + "/csvParse");
 const setting = require(__dirname + "/setting/setting");
 
 let chatLogJSON = [];
-let actionLogJSON = [];
 
 const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
 const maxDisplayTime = Math.max(...viewTime);
@@ -27,7 +26,7 @@ const menuTemplate = [
         submenu: [{
             label: "アクションログ設定",
             click() {
-                openActionSettingWindow();
+                openChatSettingWindow();
             }
         }]
     },
@@ -56,7 +55,7 @@ app.on("ready", function () {
     mainWindow = new BrowserWindow({
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
-        width: 1366,
+        width: 683,
         height: 768,
         frame: true,
         // opacity: 0.8,
@@ -73,7 +72,6 @@ app.on("ready", function () {
     mainWindow.once('ready-to-show', () => {
         ipcSendGridStyle();
         sendChatLog();
-        sendActionLog();
     })
 
     // ウィンドウが閉じられたらアプリも終了
@@ -82,8 +80,8 @@ app.on("ready", function () {
     });
 });
 
-function openActionSettingWindow() {
-    actionSettingWindow = new BrowserWindow({
+function openChatSettingWindow() {
+    chatSettingWindow = new BrowserWindow({
         parent: mainWindow,
         modal: true,
         icon: __dirname + constParams.iconPath,
@@ -95,10 +93,10 @@ function openActionSettingWindow() {
         alwaysOnTop: true
     });
 
-    // actionSettingWindow.setMenu(null);
-    // actionSettingWindow.setIgnoreMouseEvents(true);
+    // chatSettingWindow.setMenu(null);
+    // chatSettingWindow.setIgnoreMouseEvents(true);
 
-    actionSettingWindow.loadURL("file://" + __dirname + "/view/actionSetting.html");
+    chatSettingWindow.loadURL("file://" + __dirname + "/view/chatSetting.html");
 }
 
 
@@ -140,57 +138,6 @@ function sendChatLog() {
         return 0
     });
     mainWindow.webContents.send("chatLogJSON", sendChatData);
-}
-
-// IPC送信_アクションログ
-function sendActionLog() {
-    let fromTime = getFromTime();
-
-    let actionDataLvFile = actionLogJSON.filter(function (item) {
-        if (item.endTime > fromTime) return true;
-    });
-
-    const actionSetting = setting.actionLogSetting();
-
-    let sendActionData = [];
-    for (let i = 0; i < actionDataLvFile.length; i++) {
-        let innerData = actionDataLvFile[i].data;
-        for (let j = 0; j < innerData.length; j++) {
-            let rowTime = new Date(innerData[j].log_time);
-            let actionTypeIsPickup = innerData[j].action_type == "[Pickup]";
-            let actionTypeIsDiscard = innerData[j].action_type == "[Discard]";
-            if (rowTime > fromTime && innerData[j].item_name != "" && (actionTypeIsPickup == true || actionTypeIsDiscard == true)) {
-
-                let ignoreFlag = ignoreAction(actionSetting, innerData[j])
-
-                if (ignoreFlag == false) {
-                    let actionTypeStr;
-                    if (actionTypeIsPickup == true) {
-                        actionTypeStr = "取得";
-                    } else if (actionTypeIsDiscard == true) {
-                        actionTypeStr = "売却";
-                    }
-
-                    sendActionData.push({
-                        logTime: rowTime,
-                        dispDate: getDispDate(rowTime, "YYYY-MM-DD"),
-                        dispTime: getDispTime(rowTime, "hh:mm:ss"),
-                        playerId: innerData[j].player_id,
-                        playerName: innerData[j].player_name,
-                        actionType: actionTypeStr,
-                        itemName: innerData[j].item_name
-                    });
-                }
-            }
-        }
-    }
-    // DESCソート
-    sendActionData.sort(function (a, b) {
-        if (a.logTime > b.logTime) return -1
-        if (a.logTime < b.logTime) return 1
-        return 0
-    });
-    mainWindow.webContents.send("actionLogJSON", sendActionData);
 }
 
 // 時刻取得
@@ -250,18 +197,10 @@ function ipcSendNewChat(data) {
     mainWindow.webContents.send("newChat", data);
 }
 
-// IPC送信_新規Action送信
-function ipcSendNewAction(data) {
-    let sendNewActionData = [];
-
-    mainWindow.webContents.send("newAction", data);
-}
-
 // IPC受信_表示期間変更
 function changeLogTerm(value) {
     displaySelectTime = value;
     sendChatLog();
-    sendActionLog();
 }
 
 // ファイル監視
@@ -323,55 +262,6 @@ function watchFiles() {
                 });
             }
             sendChatLog();
-        } else if (fileName.startsWith("ActionLog") == true) {
-            // アクションログ
-            if (e != "unlink") {
-                let data = await csvParse.readActionLog(path);
-                if (data.length != 0) {
-                    let pushData = {
-                        "fileName": fileName,
-                        "startTime": new Date(data[0].log_time),
-                        "endTime": new Date(data[data.length - 1].log_time),
-                        "data": data
-                    };
-
-                    if (e == "add") {
-                        if (pushData.endTime < getHoldTime()) {
-                            pushData["data"] = [];
-                        }
-                        actionLogJSON.push(pushData);
-                    } else if (e == "change") {
-                        // 前のデータ
-                        let olddata = actionLogJSON.filter(function (item) {
-                            if (item.fileName == fileName) return true;
-                        });
-
-                        // 書き換え
-                        actionLogJSON = actionLogJSON.filter(function (item) {
-                            if (item.fileName != fileName) return true;
-
-                        });
-                        actionLogJSON.push(pushData);
-
-                        // 差分
-                        let diffJSON = [];
-                        if (olddata.length != 0) {
-                            let diffLength = data.length - olddata[0].data.length;
-                            for (let i = 0; i < diffLength; i++) {
-                                diffJSON.push(data[data.length - 1 - i]);
-                            }
-                        } else {
-                            diffJSON.push(data);
-                        }
-                        ipcSendNewAction(diffJSON);
-                    }
-                }
-            } else if (e == "unlink") {
-                actionLogJSON = actionLogJSON.filter(function (item) {
-                    if (item.fileName != fileName) return true;
-                });
-            }
-            sendActionLog();
         }
     });
 }
@@ -432,35 +322,6 @@ function ignoreChat(setting, data) {
     // 無視_カットイン
     if (setting["ignoreCutin"] == true) {
         if (data["content"].indexOf("/ci") != -1) {
-            return true
-        }
-    }
-    return false
-}
-
-// チャットログ_無視オプション
-function ignoreAction(setting, data) {
-    // 無視_売却
-    if (setting["ignoreSell"] == true) {
-        if (data["action_type"] == "[Discard]") {
-            return true
-        }
-    }
-    // 無視_取得
-    if (setting["ignoreGet"] == true) {
-        if (data["action_type"] == "[Pickup]") {
-            return true
-        }
-    }
-    // 無視_レスタサイン
-    if (setting["ignoreRestaSign"] == true) {
-        if (data["item_name"] == "RestaSign") {
-            return true
-        }
-    }
-    // 無視_リバーサーサイン
-    if (setting["ignoreRestaSign"] == true) {
-        if (data["item_name"] == "ReverserSign") {
             return true
         }
     }

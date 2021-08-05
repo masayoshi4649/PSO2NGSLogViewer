@@ -37,11 +37,3 @@ body {
     border: solid 1px #ddd;
     resize: both;
 }
-
-#chatlog {
-    width: 47vw;
-}
-
-#actionlog {
-    width: 47vw;
-}
