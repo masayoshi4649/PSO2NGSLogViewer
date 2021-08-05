@@ -1,5 +1,5 @@
 {
-  "name": "NGSActionViewer",
+  "name": "NGSChatViewer",
   "version": "2021.07.14",
   "main": "app.js",
   "scripts": {
