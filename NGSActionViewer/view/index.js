@@ -35,10 +35,12 @@ ipcRenderer.on("actionLogJSON", (e, data) => {
 
 // IPC受信_新着アクション
 ipcRenderer.on("newAction", (e, data) => {
+
+    console.log(data);
     let displayStr = "";
     for (let i = 0; i < data.length; i++) {
-        let actionTypeIsPickup = data[i].action_type == "[Pickup]";
-        let actionTypeIsDiscard = data[i].action_type == "[Discard]";
+        let actionTypeIsPickup = (data[i].action_type == "[Pickup]");
+        let actionTypeIsDiscard = (data[i].action_type == "[Discard]");
         if (data[i].item_name != "") {
             displayStr = displayStr + data[i].item_name + "\r\n";
         }
