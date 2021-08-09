@@ -2,6 +2,7 @@
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 let mainWindow = null;
 let actionSettingWindow = null;
+let actionNotiSettingWindow = null;
 const chokidar = require("chokidar");
 const constParams = require(__dirname + "/constParams");
 const csvParse = require(__dirname + "/csvParse");
@@ -28,6 +29,12 @@ const menuTemplate = [
             click() {
                 openActionSettingWindow();
             }
+        },
+        {
+            label: "通知設定",
+            click() {
+                openActionNotiSettingWindow();
+            }
         }]
     },
     constParams.menu_help,
@@ -53,6 +60,7 @@ app.on("window-all-closed", function () {
 // Electronの初期化完了後に実行
 app.on("ready", function () {
     mainWindow = new BrowserWindow({
+        title: constParams.appName,
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
         width: 683,
@@ -69,7 +77,7 @@ app.on("ready", function () {
     watchFiles();
 
     // 画面読み込み後一度だけ
-    mainWindow.once('ready-to-show', () => {
+    mainWindow.once("ready-to-show", () => {
         ipcSendGridStyle();
         sendActionLog();
     })
@@ -97,6 +105,35 @@ function openActionSettingWindow() {
     // actionSettingWindow.setIgnoreMouseEvents(true);
 
     actionSettingWindow.loadURL("file://" + __dirname + "/view/actionSetting.html");
+
+    // 現在の設定
+    actionSettingWindow.once("ready-to-show", () => {
+        actionSettingWindow.webContents.send("currentSetting", setting.actionLogSetting());
+    })
+}
+
+function openActionNotiSettingWindow() {
+    actionNotiSettingWindow = new BrowserWindow({
+        parent: mainWindow,
+        modal: true,
+        icon: __dirname + constParams.iconPath,
+        webPreferences: constParams.webPreferences,
+        width: 800,
+        height: 600,
+        frame: true,
+        // opacity: 0.8,
+        alwaysOnTop: true
+    });
+
+    // actionSettingWindow.setMenu(null);
+    // actionSettingWindow.setIgnoreMouseEvents(true);
+
+    actionNotiSettingWindow.loadURL("file://" + __dirname + "/view/notification.html");
+
+    // 現在の設定
+    actionNotiSettingWindow.once("ready-to-show", () => {
+        // actionNotiSettingWindow.webContents.send("currentSetting", setting.actionLogSetting());
+    })
 }
 
 // IPC送信_アクションログ
@@ -107,19 +144,19 @@ function sendActionLog() {
         if (item.endTime > fromTime) return true;
     });
 
-    const actionSetting = setting.actionLogSetting();
+    let actionSetting = setting.actionLogSetting();
 
     let sendActionData = [];
     for (let i = 0; i < actionDataLvFile.length; i++) {
         let innerData = actionDataLvFile[i].data;
         for (let j = 0; j < innerData.length; j++) {
             let rowTime = new Date(innerData[j].log_time);
-            let actionTypeIsPickup = innerData[j].action_type == "[Pickup]";
-            let actionTypeIsDiscard = innerData[j].action_type == "[Discard]";
+            let actionTypeIsPickup = (innerData[j].action_type == "[Pickup]");
+            let actionTypeIsDiscard = (innerData[j].action_type == "[Discard]");
             if (rowTime > fromTime && innerData[j].item_name != "" && (actionTypeIsPickup == true || actionTypeIsDiscard == true)) {
-
+                // 無視フラグ
                 let ignoreFlag = ignoreAction(actionSetting, innerData[j])
-
+                // console.log("ignoreFlag=>", actionSetting)
                 if (ignoreFlag == false) {
                     let actionTypeStr;
                     if (actionTypeIsPickup == true) {
@@ -176,8 +213,8 @@ function getDispDate(data, format) {
         format = "YYYY-MM-DD";
     }
     format = format.replace(/YYYY/g, dateData.getFullYear());
-    format = format.replace(/MM/g, ('0' + (dateData.getMonth() + 1)).slice(-2));
-    format = format.replace(/DD/g, ('0' + dateData.getDate()).slice(-2));
+    format = format.replace(/MM/g, ("0" + (dateData.getMonth() + 1)).slice(-2));
+    format = format.replace(/DD/g, ("0" + dateData.getDate()).slice(-2));
     return format;
 }
 
@@ -191,9 +228,9 @@ function getDispTime(data, format) {
     if (format == null) {
         format = "hh:mm:ss";
     }
-    format = format.replace(/hh/g, ('0' + dateData.getHours()).slice(-2));
-    format = format.replace(/mm/g, ('0' + dateData.getMinutes()).slice(-2));
-    format = format.replace(/ss/g, ('0' + dateData.getSeconds()).slice(-2));
+    format = format.replace(/hh/g, ("0" + dateData.getHours()).slice(-2));
+    format = format.replace(/mm/g, ("0" + dateData.getMinutes()).slice(-2));
+    format = format.replace(/ss/g, ("0" + dateData.getSeconds()).slice(-2));
     return format;
 }
 
@@ -292,6 +329,12 @@ function menuFileTime() {
     }
     return submenuArr;
 }
+
+// IPC受信_ログ設定変更
+ipcMain.on("NewActionLogSetting", (e, jsondata) => {
+    setting.writeActionLogSetting(jsondata);
+    sendActionLog();
+});
 
 // アクションログ_無視オプション
 function ignoreAction(setting, data) {

@@ -2,6 +2,7 @@
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 let mainWindow = null;
 let chatSettingWindow = null;
+let chatNotiSettingWindow = null;
 const chokidar = require("chokidar");
 const constParams = require(__dirname + "/constParams");
 const csvParse = require(__dirname + "/csvParse");
@@ -24,9 +25,15 @@ const menuTemplate = [
     {
         label: "設定",
         submenu: [{
-            label: "アクションログ設定",
+            label: "チャットログ設定",
             click() {
                 openChatSettingWindow();
+            }
+        },
+        {
+            label: "通知設定",
+            click() {
+                openChatNotiSettingWindow();
             }
         }]
     },
@@ -53,6 +60,7 @@ app.on("window-all-closed", function () {
 // Electronの初期化完了後に実行
 app.on("ready", function () {
     mainWindow = new BrowserWindow({
+        title: constParams.appName,
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
         width: 683,
@@ -97,8 +105,37 @@ function openChatSettingWindow() {
     // chatSettingWindow.setIgnoreMouseEvents(true);
 
     chatSettingWindow.loadURL("file://" + __dirname + "/view/chatSetting.html");
+
+
+    // 現在の設定
+    chatSettingWindow.once("ready-to-show", () => {
+        chatSettingWindow.webContents.send("currentSetting", setting.chatLogSetting());
+    })
 }
 
+function openChatNotiSettingWindow() {
+    chatNotiSettingWindow = new BrowserWindow({
+        parent: mainWindow,
+        modal: true,
+        icon: __dirname + constParams.iconPath,
+        webPreferences: constParams.webPreferences,
+        width: 800,
+        height: 600,
+        frame: true,
+        // opacity: 0.8,
+        alwaysOnTop: true
+    });
+
+    // actionSettingWindow.setMenu(null);
+    // actionSettingWindow.setIgnoreMouseEvents(true);
+
+    chatNotiSettingWindow.loadURL("file://" + __dirname + "/view/notification.html");
+
+    // 現在の設定
+    chatNotiSettingWindow.once("ready-to-show", () => {
+        // chatNotiSettingWindow.webContents.send("currentSetting", setting.actionLogSetting());
+    })
+}
 
 // IPC送信_チャットログ
 function sendChatLog() {
@@ -108,7 +145,7 @@ function sendChatLog() {
         if (item.endTime > fromTime) return true;
     });
 
-    const chatSetting = setting.chatLogSetting();
+    let chatSetting = setting.chatLogSetting();
 
     let sendChatData = [];
     for (let i = 0; i < chatDataLvFile.length; i++) {
@@ -283,11 +320,17 @@ function menuFileTime() {
     return submenuArr;
 }
 
+// IPC受信_ログ設定変更
+ipcMain.on("NewChatLogSetting", (e, jsondata) => {
+    setting.writeChatLogSetting(jsondata);
+    sendChatLog();
+});
+
 // チャットログ_無視オプション
 function ignoreChat(setting, data) {
     // 無視_ロビアク
     if (setting["ignoreLobyAction"] == true) {
-        if (data["content"].indexOf("/la") != -1 || data["content"].indexOf("/cla") != -1) {
+        if (data["content"].indexOf("/la") != -1 || data["content"].indexOf("/cla") != -1 || data["content"].indexOf("/mla") != -1) {
             return true
         }
     }
