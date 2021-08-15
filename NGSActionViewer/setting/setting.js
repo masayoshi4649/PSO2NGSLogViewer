@@ -32,7 +32,6 @@ function actionLogSetting() {
         returnJSON[keys[i]] = userJSON[keys[i]] || defaultJSON[keys[i]];
     }
 
-    console.log("returnJSON=>", returnJSON)
     return returnJSON;
 }
 
@@ -40,9 +39,20 @@ function writeActionLogSetting(jsondata) {
     fs.writeFileSync(__dirname + "\\user\\actionLog.json", JSON.stringify(jsondata, null, "\t"));
 }
 
+function writeActionLogNotiSetting(jsondata) {
+    fs.writeFileSync(__dirname + "\\user\\actionLogNoti.json", JSON.stringify(jsondata, null, "\t"));
+}
+
+function actionLogNotiSetting() {
+    return JSON.parse(
+        fs.readFileSync(__dirname + "\\user\\actionLogNoti.json", "utf8")
+    );
+}
 
 module.exports = {
     gridSetting,
     actionLogSetting,
-    writeActionLogSetting
+    writeActionLogSetting,
+    writeActionLogNotiSetting,
+    actionLogNotiSetting
 }

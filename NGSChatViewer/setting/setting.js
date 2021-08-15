@@ -38,8 +38,20 @@ function writeChatLogSetting(jsondata) {
     fs.writeFileSync(__dirname + "\\user\\chatLog.json", JSON.stringify(jsondata, null, "\t"));
 }
 
+function writeChatLogNotiSetting(jsondata) {
+    fs.writeFileSync(__dirname + "\\user\\chatLogNoti.json", JSON.stringify(jsondata, null, "\t"));
+}
+
+function chatLogNotiSetting() {
+    return JSON.parse(
+        fs.readFileSync(__dirname + "\\user\\chatLogNoti.json", "utf8")
+    );
+}
+
 module.exports = {
     gridSetting,
     chatLogSetting,
-    writeChatLogSetting
+    writeChatLogSetting,
+    writeChatLogNotiSetting,
+    chatLogNotiSetting
 }

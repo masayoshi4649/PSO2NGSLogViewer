@@ -1,0 +1,26 @@
+table {
+    width         : 100%;
+    table-layout  : fixed;
+    border-spacing: 0;
+}
+
+table th,
+td {
+    border-collapse: collapse;
+    border         : 1px solid #333;
+    text-align     : center;
+}
+
+table .inputtextTitle {
+    width: 60%;
+
+}
+
+table .inputtext {
+    width     : 95%;
+    text-align: left;
+}
+
+h2 {
+    color: darkred;
+}

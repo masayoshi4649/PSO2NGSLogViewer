@@ -80,6 +80,7 @@ app.on("ready", function () {
     mainWindow.once('ready-to-show', () => {
         ipcSendGridStyle();
         sendChatLog();
+        ipcSendNewActionNoti(setting.chatLogNotiSetting());
     })
 
     // ウィンドウが閉じられたらアプリも終了
@@ -323,6 +324,7 @@ function menuFileTime() {
 // IPC受信_ログ設定変更
 ipcMain.on("NewChatLogSetting", (e, jsondata) => {
     setting.writeChatLogSetting(jsondata);
+    chatSettingWindow.close();
     sendChatLog();
 });
 
@@ -369,4 +371,16 @@ function ignoreChat(setting, data) {
         }
     }
     return false
+}
+
+// IPC受信_通知設定
+ipcMain.on("NewChatLogNotiSetting", (e, jsondata) => {
+    ipcSendNewActionNoti(jsondata);
+    chatNotiSettingWindow.close();
+    setting.writeChatLogNotiSetting(jsondata);
+})
+
+// IPC送信_新規通知設定
+function ipcSendNewActionNoti(jsondata) {
+    mainWindow.webContents.send("NewChatLogNotiSetting", jsondata);
 }

@@ -1,1 +1,8 @@
-{}
+{
+	"ignoreLobyAction": true,
+	"ignoreMyFashion": true,
+	"ignoreStamp": true,
+	"ignoreUioff": true,
+	"ignoreCameraEye": true,
+	"ignoreCutin": true
+}
