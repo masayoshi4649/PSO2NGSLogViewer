@@ -49,10 +49,33 @@ function actionLogNotiSetting() {
     );
 }
 
+function writeAppSetting(jsondata) {
+    fs.writeFileSync(__dirname + "\\user\\app.json", JSON.stringify(jsondata, null, "\t"));
+}
+
+function appSetting() {
+    let returnJSON = {};
+    const defaultJSON = JSON.parse(
+        fs.readFileSync(__dirname + "\\default\\app.json", "utf8")
+    );
+    const userJSON = JSON.parse(
+        fs.readFileSync(__dirname + "\\user\\app.json", "utf8")
+    );
+    let keys = Object.keys(defaultJSON);
+    for (let i = 0; i < keys.length; i++) {
+        // ユーザ定義優先 null時default
+        returnJSON[keys[i]] = userJSON[keys[i]] || defaultJSON[keys[i]];
+    }
+
+    return returnJSON;
+}
+
 module.exports = {
     gridSetting,
     actionLogSetting,
     writeActionLogSetting,
     writeActionLogNotiSetting,
-    actionLogNotiSetting
+    actionLogNotiSetting,
+    writeAppSetting,
+    appSetting
 }

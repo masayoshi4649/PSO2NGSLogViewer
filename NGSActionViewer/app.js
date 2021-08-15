@@ -4,6 +4,7 @@ const { app, BrowserWindow, Menu, ipcMain, dialog } = require("electron");
 let mainWindow = null;
 let actionSettingWindow = null;
 let actionNotiSettingWindow = null;
+let appSettingWindow = null;
 const chokidar = require("chokidar");
 const constParams = require(__dirname + "/constParams");
 const csvParse = require(__dirname + "/csvParse");
@@ -36,6 +37,12 @@ const menuTemplate = [
             click() {
                 openActionNotiSettingWindow();
             }
+        },
+        {
+            label: "アプリ設定",
+            click() {
+                openAppSettingWindow();
+            }
         }]
     },
     constParams.menu_help,
@@ -60,6 +67,7 @@ app.on("window-all-closed", function () {
 
 // Electronの初期化完了後に実行
 app.on("ready", function () {
+    const appSetting = setting.appSetting();
     mainWindow = new BrowserWindow({
         title: constParams.appName,
         icon: __dirname + constParams.iconPath,
@@ -67,8 +75,8 @@ app.on("ready", function () {
         width: 683,
         height: 768,
         frame: true,
-        opacity: 0.1,
-        alwaysOnTop: true
+        opacity: appSetting["opacity"] / 100,
+        alwaysOnTop: appSetting["alwaysOnTop"]
     });
 
     // mainWindow.setMenu(null);
@@ -98,13 +106,8 @@ function openActionSettingWindow() {
         width: 800,
         height: 600,
         frame: true,
-        // opacity: 0.8,
-        // alwaysOnTop: true
     });
-
-    // actionSettingWindow.setMenu(null);
-    // actionSettingWindow.setIgnoreMouseEvents(true);
-
+    actionSettingWindow.setMenu(null);
     actionSettingWindow.loadURL("file://" + __dirname + "/view/actionSetting.html");
 
     // 現在の設定
@@ -122,18 +125,36 @@ function openActionNotiSettingWindow() {
         width: 800,
         height: 600,
         frame: true,
-        // opacity: 0.8,
-        // alwaysOnTop: true
     });
 
-    // actionSettingWindow.setMenu(null);
-    // actionSettingWindow.setIgnoreMouseEvents(true);
-
+    actionSettingWindow.setMenu(null);
     actionNotiSettingWindow.loadURL("file://" + __dirname + "/view/notification.html");
 
     // 現在の設定
     actionNotiSettingWindow.once("ready-to-show", () => {
         actionNotiSettingWindow.webContents.send("currentSetting", setting.actionLogNotiSetting());
+    })
+}
+
+// アプリ設定画面
+function openAppSettingWindow() {
+    appSettingWindow = new BrowserWindow({
+        parent: mainWindow,
+        modal: true,
+        icon: __dirname + constParams.iconPath,
+        webPreferences: constParams.webPreferences,
+        width: 800,
+        height: 600,
+        frame: true,
+    });
+
+    appSettingWindow.setMenu(null);
+    appSettingWindow.loadURL("file://" + __dirname + "/view/appSetting.html");
+
+
+    // 現在の設定
+    appSettingWindow.once("ready-to-show", () => {
+        appSettingWindow.webContents.send("currentSetting", setting.appSetting());
     })
 }
 
@@ -377,3 +398,10 @@ ipcMain.on("NewActionLogNotiSetting", (e, jsondata) => {
 function ipcSendNewActionNoti(jsondata) {
     mainWindow.webContents.send("NewActionLogNotiSetting", jsondata);
 }
+
+// IPC受信_アプリ設定
+ipcMain.on("NewAppSetting", (e, jsondata) => {
+    setting.writeAppSetting(jsondata);
+    app.relaunch();
+    app.exit();
+})

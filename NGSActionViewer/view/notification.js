@@ -131,7 +131,6 @@ ipcRenderer.on("currentSetting", (e, data) => {
 
 // 現在の設定読み込み
 function loadCurrent(data) {
-    console.log(data)
     for (let i = 0; i < data.length; i++) {
         coladd(data[i]["inputtext"], data[i]["hitType"], data[i]["notisound"]);
     }
