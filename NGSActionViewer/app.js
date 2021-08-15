@@ -1,5 +1,6 @@
 "use strict";
-const { app, BrowserWindow, Menu, ipcMain } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require("electron");
+// const dialog = electron.dialog
 let mainWindow = null;
 let actionSettingWindow = null;
 let actionNotiSettingWindow = null;
@@ -66,12 +67,11 @@ app.on("ready", function () {
         width: 683,
         height: 768,
         frame: true,
-        // opacity: 0.8,
-        // alwaysOnTop: true
+        opacity: 0.1,
+        alwaysOnTop: true
     });
 
     // mainWindow.setMenu(null);
-    // mainWindow.setIgnoreMouseEvents(true);
 
     mainWindow.loadURL("file://" + __dirname + "/view/index.html");
     watchFiles();
@@ -80,6 +80,7 @@ app.on("ready", function () {
     mainWindow.once("ready-to-show", () => {
         ipcSendGridStyle();
         sendActionLog();
+        ipcSendNewActionNoti(setting.actionLogNotiSetting());
     })
 
     // ウィンドウが閉じられたらアプリも終了
@@ -98,7 +99,7 @@ function openActionSettingWindow() {
         height: 600,
         frame: true,
         // opacity: 0.8,
-        alwaysOnTop: true
+        // alwaysOnTop: true
     });
 
     // actionSettingWindow.setMenu(null);
@@ -122,7 +123,7 @@ function openActionNotiSettingWindow() {
         height: 600,
         frame: true,
         // opacity: 0.8,
-        alwaysOnTop: true
+        // alwaysOnTop: true
     });
 
     // actionSettingWindow.setMenu(null);
@@ -156,7 +157,6 @@ function sendActionLog() {
             if (rowTime > fromTime && innerData[j].item_name != "" && (actionTypeIsPickup == true || actionTypeIsDiscard == true)) {
                 // 無視フラグ
                 let ignoreFlag = ignoreAction(actionSetting, innerData[j])
-                // console.log("ignoreFlag=>", actionSetting)
                 if (ignoreFlag == false) {
                     let actionTypeStr;
                     if (actionTypeIsPickup == true) {
@@ -333,6 +333,7 @@ function menuFileTime() {
 // IPC受信_ログ設定変更
 ipcMain.on("NewActionLogSetting", (e, jsondata) => {
     setting.writeActionLogSetting(jsondata);
+    actionSettingWindow.close();
     sendActionLog();
 });
 
@@ -363,4 +364,16 @@ function ignoreAction(setting, data) {
         }
     }
     return false
+}
+
+// IPC受信_通知設定
+ipcMain.on("NewActionLogNotiSetting", (e, jsondata) => {
+    ipcSendNewActionNoti(jsondata);
+    actionNotiSettingWindow.close();
+    setting.writeActionLogNotiSetting(jsondata);
+})
+
+// IPC送信_新規通知設定
+function ipcSendNewActionNoti(jsondata) {
+    mainWindow.webContents.send("NewActionLogNotiSetting", jsondata);
 }

@@ -8,7 +8,7 @@
     "getColor": "#FFFFFF",
     "sellbgColor": "#4d0000",
     "sellColor": "#00FF00",
-    "recentTime": 1,
+    "recentTime": 10,
     "recentColor": "#00FFFF",
     "borderColor": "#4d0000"
 }
