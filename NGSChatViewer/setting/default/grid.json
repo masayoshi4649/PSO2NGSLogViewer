@@ -1,4 +1,6 @@
 {
+    "opacity": 100,
+    "alwaysOnTop": true,
     "bgColor": "#1E1E1E",
     "titleColor": "#FFFFFF",
     "titlebgColor": "#02264D",

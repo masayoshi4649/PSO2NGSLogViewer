@@ -3,6 +3,7 @@ const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 let mainWindow = null;
 let chatSettingWindow = null;
 let chatNotiSettingWindow = null;
+let appSettingWindow = null;
 const chokidar = require("chokidar");
 const constParams = require(__dirname + "/constParams");
 const csvParse = require(__dirname + "/csvParse");
@@ -35,6 +36,11 @@ const menuTemplate = [
             click() {
                 openChatNotiSettingWindow();
             }
+        }, {
+            label: "アプリ設定",
+            click() {
+                openAppSettingWindow();
+            }
         }]
     },
     constParams.menu_help,
@@ -59,6 +65,7 @@ app.on("window-all-closed", function () {
 
 // Electronの初期化完了後に実行
 app.on("ready", function () {
+    const appSetting = setting.appSetting();
     mainWindow = new BrowserWindow({
         title: constParams.appName,
         icon: __dirname + constParams.iconPath,
@@ -66,8 +73,8 @@ app.on("ready", function () {
         width: 683,
         height: 768,
         frame: true,
-        // opacity: 0.8,
-        // alwaysOnTop: true
+        opacity: appSetting["opacity"] / 100,
+        alwaysOnTop: appSetting["alwaysOnTop"]
     });
 
     // mainWindow.setMenu(null);
@@ -77,7 +84,7 @@ app.on("ready", function () {
     watchFiles();
 
     // 画面読み込み後一度だけ
-    mainWindow.once('ready-to-show', () => {
+    mainWindow.once("ready-to-show", () => {
         ipcSendGridStyle();
         sendChatLog();
         ipcSendNewActionNoti(setting.chatLogNotiSetting());
@@ -102,9 +109,7 @@ function openChatSettingWindow() {
         alwaysOnTop: true
     });
 
-    // chatSettingWindow.setMenu(null);
-    // chatSettingWindow.setIgnoreMouseEvents(true);
-
+    chatSettingWindow.setMenu(null);
     chatSettingWindow.loadURL("file://" + __dirname + "/view/chatSetting.html");
 
 
@@ -127,14 +132,34 @@ function openChatNotiSettingWindow() {
         alwaysOnTop: true
     });
 
-    // actionSettingWindow.setMenu(null);
-    // actionSettingWindow.setIgnoreMouseEvents(true);
-
+    chatNotiSettingWindow.setMenu(null);
     chatNotiSettingWindow.loadURL("file://" + __dirname + "/view/notification.html");
 
     // 現在の設定
     chatNotiSettingWindow.once("ready-to-show", () => {
-        // chatNotiSettingWindow.webContents.send("currentSetting", setting.actionLogSetting());
+        chatNotiSettingWindow.webContents.send("currentSetting", setting.chatLogNotiSetting());
+    })
+}
+
+// アプリ設定画面
+function openAppSettingWindow() {
+    appSettingWindow = new BrowserWindow({
+        parent: mainWindow,
+        modal: true,
+        icon: __dirname + constParams.iconPath,
+        webPreferences: constParams.webPreferences,
+        width: 800,
+        height: 600,
+        frame: true,
+    });
+
+    appSettingWindow.setMenu(null);
+    appSettingWindow.loadURL("file://" + __dirname + "/view/appSetting.html");
+
+
+    // 現在の設定
+    appSettingWindow.once("ready-to-show", () => {
+        appSettingWindow.webContents.send("currentSetting", setting.appSetting());
     })
 }
 
@@ -204,8 +229,8 @@ function getDispDate(data, format) {
         format = "YYYY-MM-DD";
     }
     format = format.replace(/YYYY/g, dateData.getFullYear());
-    format = format.replace(/MM/g, ('0' + (dateData.getMonth() + 1)).slice(-2));
-    format = format.replace(/DD/g, ('0' + dateData.getDate()).slice(-2));
+    format = format.replace(/MM/g, ("0" + (dateData.getMonth() + 1)).slice(-2));
+    format = format.replace(/DD/g, ("0" + dateData.getDate()).slice(-2));
     return format;
 }
 
@@ -219,9 +244,9 @@ function getDispTime(data, format) {
     if (format == null) {
         format = "hh:mm:ss";
     }
-    format = format.replace(/hh/g, ('0' + dateData.getHours()).slice(-2));
-    format = format.replace(/mm/g, ('0' + dateData.getMinutes()).slice(-2));
-    format = format.replace(/ss/g, ('0' + dateData.getSeconds()).slice(-2));
+    format = format.replace(/hh/g, ("0" + dateData.getHours()).slice(-2));
+    format = format.replace(/mm/g, ("0" + dateData.getMinutes()).slice(-2));
+    format = format.replace(/ss/g, ("0" + dateData.getSeconds()).slice(-2));
     return format;
 }
 
@@ -384,3 +409,10 @@ ipcMain.on("NewChatLogNotiSetting", (e, jsondata) => {
 function ipcSendNewActionNoti(jsondata) {
     mainWindow.webContents.send("NewChatLogNotiSetting", jsondata);
 }
+
+// IPC受信_アプリ設定
+ipcMain.on("NewAppSetting", (e, jsondata) => {
+    setting.writeAppSetting(jsondata);
+    app.relaunch();
+    app.exit();
+})

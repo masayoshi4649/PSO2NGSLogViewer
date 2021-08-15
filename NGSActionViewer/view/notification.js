@@ -119,8 +119,19 @@ function inputGet() {
     return resultarr;
 }
 
-
 // 設定を送信
 function sendSetting(jsondata) {
     ipcRenderer.send("NewActionLogNotiSetting", jsondata);
+}
+
+// IPC受信_現在の設定
+ipcRenderer.on("currentSetting", (e, data) => {
+    loadCurrent(data);
+})
+
+// 現在の設定読み込み
+function loadCurrent(data) {
+    for (let i = 0; i < data.length; i++) {
+        coladd(data[i]["inputtext"], data[i]["hitType"], data[i]["notisound"]);
+    }
 }
