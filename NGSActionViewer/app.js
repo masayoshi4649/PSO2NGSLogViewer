@@ -133,7 +133,7 @@ function openActionNotiSettingWindow() {
 
     // 現在の設定
     actionNotiSettingWindow.once("ready-to-show", () => {
-        // actionNotiSettingWindow.webContents.send("currentSetting", setting.actionLogSetting());
+        actionNotiSettingWindow.webContents.send("currentSetting", setting.actionLogNotiSetting());
     })
 }
 

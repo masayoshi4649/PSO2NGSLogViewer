@@ -77,7 +77,7 @@ app.on("ready", function () {
     watchFiles();
 
     // 画面読み込み後一度だけ
-    mainWindow.once('ready-to-show', () => {
+    mainWindow.once("ready-to-show", () => {
         ipcSendGridStyle();
         sendChatLog();
         ipcSendNewActionNoti(setting.chatLogNotiSetting());
@@ -134,7 +134,7 @@ function openChatNotiSettingWindow() {
 
     // 現在の設定
     chatNotiSettingWindow.once("ready-to-show", () => {
-        // chatNotiSettingWindow.webContents.send("currentSetting", setting.actionLogSetting());
+        chatNotiSettingWindow.webContents.send("currentSetting", setting.chatLogNotiSetting());
     })
 }
 
@@ -204,8 +204,8 @@ function getDispDate(data, format) {
         format = "YYYY-MM-DD";
     }
     format = format.replace(/YYYY/g, dateData.getFullYear());
-    format = format.replace(/MM/g, ('0' + (dateData.getMonth() + 1)).slice(-2));
-    format = format.replace(/DD/g, ('0' + dateData.getDate()).slice(-2));
+    format = format.replace(/MM/g, ("0" + (dateData.getMonth() + 1)).slice(-2));
+    format = format.replace(/DD/g, ("0" + dateData.getDate()).slice(-2));
     return format;
 }
 
@@ -219,9 +219,9 @@ function getDispTime(data, format) {
     if (format == null) {
         format = "hh:mm:ss";
     }
-    format = format.replace(/hh/g, ('0' + dateData.getHours()).slice(-2));
-    format = format.replace(/mm/g, ('0' + dateData.getMinutes()).slice(-2));
-    format = format.replace(/ss/g, ('0' + dateData.getSeconds()).slice(-2));
+    format = format.replace(/hh/g, ("0" + dateData.getHours()).slice(-2));
+    format = format.replace(/mm/g, ("0" + dateData.getMinutes()).slice(-2));
+    format = format.replace(/ss/g, ("0" + dateData.getSeconds()).slice(-2));
     return format;
 }
 
