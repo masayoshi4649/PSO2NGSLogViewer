@@ -13,7 +13,9 @@ window.onload = function () {
 
 // IPC受信_チャット
 ipcRenderer.on("chatLogJSON", (e, data) => {
-    updateChatGrid(data);
+    if (data) {
+        updateChatGrid(data);
+    }
 });
 
 // IPC受信_新着チャット
@@ -33,7 +35,7 @@ function notify(title, mes, silent) {
         title: "新着通知",
         body: mes,
         silent: silent,
-        icon: "./wis.ico",
+        icon: __dirname + "\\icon.png",
         // toastXml: null
     });
 }
@@ -210,40 +212,6 @@ ipcRendererStyle.on("gridSetting", (e, data) => {
 ipcRenderer.on("NewChatLogNotiSetting", (e, data) => {
     notiSetting = data;
 });
-
-// 通知判定
-function checkNoti(word) {
-    let returnjson = {
-        "noti": false,
-        "notisound": false
-    }
-
-    for (let i = 0; i < notiSetting.length; i++) {
-        // 検索情報
-        let hitType = notiSetting[i]["hitType"]
-        let inputtext = notiSetting[i]["inputtext"]
-        let notisound = notiSetting[i]["notisound"]
-
-        if (hitType == "partial") {
-            // 部分一致
-            if (word.indexOf(inputtext) > -1) {
-                returnjson = {
-                    "noti": true,
-                    "notisound": notisound
-                }
-            }
-        } else if (hitType == "perfect") {
-            // 完全一致
-            if (word == inputtext) {
-                returnjson = {
-                    "noti": true,
-                    "notisound": notisound
-                }
-            }
-        }
-    }
-    return returnjson;
-}
 
 // 通知判定
 function checkNoti(word) {
