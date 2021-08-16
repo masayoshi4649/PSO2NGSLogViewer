@@ -1,6 +1,6 @@
 {
   "name": "NGSChatViewer",
-  "version": "2021.07.14",
+  "version": "2021.08.16",
   "main": "app.js",
   "scripts": {
     "start": "chcp 65001 && electron .",

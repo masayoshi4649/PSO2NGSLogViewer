@@ -1,7 +1,7 @@
 const { app } = require("electron");
 
 const appName = "PSO2NGS LogViewer";
-const releaseNum = "2021.07.14";
+const releaseNum = "2021.08.16";
 
 const iconPath = "/asset/rappy.ico"
 
