@@ -1,9 +1,9 @@
 const { app } = require("electron");
 
-const appName = "PSO2NGS LogViewer";
+const appName = "PSO2NGS Chat LogViewer";
 const releaseNum = "2021.08.16";
 
-const iconPath = "/asset/rappy.ico"
+const iconPath = "/asset/rappy.png"
 
 const webPreferences = {
     nodeIntegration: true,

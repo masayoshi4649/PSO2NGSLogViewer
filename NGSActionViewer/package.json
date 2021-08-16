@@ -18,6 +18,17 @@
   },
   "devDependencies": {
     "electron": "^13.1.7",
-    "electron-builder": "^22.11.7"
+    "electron-builder": "^22.11.7",
+    "electron-packager": "^15.3.0"
+  },
+  "build": {
+    "win": {
+      "target": "nsis",
+      "icon": "asset/rappy.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
