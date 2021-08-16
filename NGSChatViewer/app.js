@@ -102,8 +102,8 @@ function openChatSettingWindow() {
         modal: true,
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 300,
         frame: true,
         // opacity: 0.8,
         alwaysOnTop: true
@@ -128,7 +128,6 @@ function openChatNotiSettingWindow() {
         width: 800,
         height: 600,
         frame: true,
-        // opacity: 0.8,
         alwaysOnTop: true
     });
 
@@ -148,8 +147,8 @@ function openAppSettingWindow() {
         modal: true,
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 200,
         frame: true,
     });
 
