@@ -21,9 +21,11 @@
     "electron-builder": "^22.11.7"
   },
   "build": {
+    "asar": false,
     "win": {
       "target": "nsis",
-      "icon": "asset/rappy.png"
+      "icon": "asset/rappy.png",
+      "requestedExecutionLevel": "requireAdministrator"
     },
     "nsis": {
       "oneClick": false,

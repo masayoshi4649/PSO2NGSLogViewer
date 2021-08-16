@@ -1,6 +1,5 @@
 "use strict";
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require("electron");
-// const dialog = electron.dialog
 let mainWindow = null;
 let actionSettingWindow = null;
 let actionNotiSettingWindow = null;
