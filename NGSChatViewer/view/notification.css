@@ -1,3 +1,8 @@
+body {
+    background-color: #2D2D2D;
+    color           : #FFFFFF;
+}
+
 table {
     width         : 100%;
     table-layout  : fixed;
@@ -7,7 +12,7 @@ table {
 table th,
 td {
     border-collapse: collapse;
-    border         : 1px solid #333;
+    border         : 1px solid #EEEEEE;
     text-align     : center;
 }
 

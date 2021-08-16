@@ -103,8 +103,8 @@ function openActionSettingWindow() {
         modal: true,
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 300,
         frame: true,
     });
     actionSettingWindow.setMenu(null);
@@ -127,7 +127,7 @@ function openActionNotiSettingWindow() {
         frame: true,
     });
 
-    actionSettingWindow.setMenu(null);
+    actionNotiSettingWindow.setMenu(null);
     actionNotiSettingWindow.loadURL("file://" + __dirname + "/view/notification.html");
 
     // 現在の設定
@@ -143,8 +143,8 @@ function openAppSettingWindow() {
         modal: true,
         icon: __dirname + constParams.iconPath,
         webPreferences: constParams.webPreferences,
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 200,
         frame: true,
     });
 
