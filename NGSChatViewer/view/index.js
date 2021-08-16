@@ -11,13 +11,6 @@ window.onload = function () {
     ipcRendererStyle.send("gridSetting")
 }
 
-// IPC受信_チャット
-ipcRenderer.on("chatLogJSON", (e, data) => {
-    if (data) {
-        updateChatGrid(data);
-    }
-});
-
 // IPC受信_新着チャット
 ipcRenderer.on("newChat", (e, data) => {
     for (let i = 0; i < data.length; i++) {
@@ -35,15 +28,11 @@ function notify(title, mes, silent) {
         title: "新着通知",
         body: mes,
         silent: silent,
-        icon: __dirname + "\\icon.png",
+        icon: __dirname + "\\rappy.png",
         // toastXml: null
     });
 }
 
-// Grid更新_チャットログ
-function updateChatGrid(data) {
-    chatLogGrid.records = data;
-}
 
 const ipcRendererStyle = require("electron").ipcRenderer;
 
@@ -206,6 +195,20 @@ ipcRendererStyle.on("gridSetting", (e, data) => {
 
     // Grid
     chatLogGrid = new cheetahGrid.ListGrid(gridOptionChat);
+
+    // Grid更新_チャットログ
+    function updateChatGrid(data) {
+        if (data) {
+            chatLogGrid.records = data;
+        }
+    }
+
+    // IPC受信_チャット
+    ipcRenderer.on("chatLogJSON", (e, data) => {
+        if (data) {
+            updateChatGrid(data);
+        }
+    });
 });
 
 // IPC受信_通知設定

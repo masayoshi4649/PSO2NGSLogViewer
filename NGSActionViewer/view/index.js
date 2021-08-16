@@ -11,13 +11,6 @@ window.onload = function () {
     ipcRendererStyle.send("gridSetting")
 }
 
-// IPC受信_アクション
-ipcRenderer.on("actionLogJSON", (e, data) => {
-    if (data) {
-        updateActionGrid(data);
-    }
-});
-
 // IPC受信_新着アクション
 ipcRenderer.on("newAction", (e, data) => {
     for (let i = 0; i < data.length; i++) {
@@ -38,14 +31,9 @@ function notify(title, mes, silent) {
         title: "新着通知",
         body: mes,
         silent: silent,
-        icon: __dirname + "\\icon.png",
+        icon: __dirname + "\\rappy.png",
         // toastXml: null
     });
-}
-
-// Grid更新_アクションログ
-function updateActionGrid(data) {
-    actionLogGrid.records = data;
 }
 
 const ipcRendererStyle = require("electron").ipcRenderer;
@@ -184,6 +172,20 @@ ipcRendererStyle.on("gridSetting", (e, data) => {
 
     // Grid
     actionLogGrid = new cheetahGrid.ListGrid(gridOptionAction);
+
+    // Grid更新_アクションログ
+    function updateActionGrid(data) {
+        if (data) {
+            actionLogGrid.records = data;
+        }
+    }
+
+    // IPC受信_アクション
+    ipcRenderer.on("actionLogJSON", (e, data) => {
+        if (data) {
+            updateActionGrid(data);
+        }
+    });
 });
 
 // IPC受信_通知設定
