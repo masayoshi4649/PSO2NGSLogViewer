@@ -13,7 +13,9 @@ window.onload = function () {
 
 // IPC受信_アクション
 ipcRenderer.on("actionLogJSON", (e, data) => {
-    updateActionGrid(data);
+    if (data) {
+        updateActionGrid(data);
+    }
 });
 
 // IPC受信_新着アクション
@@ -36,7 +38,7 @@ function notify(title, mes, silent) {
         title: "新着通知",
         body: mes,
         silent: silent,
-        icon: "./wis.ico",
+        icon: __dirname + "\\icon.png",
         // toastXml: null
     });
 }
