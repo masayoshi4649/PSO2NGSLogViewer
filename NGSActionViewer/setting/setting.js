@@ -70,6 +70,12 @@ function appSetting() {
     return returnJSON;
 }
 
+function loadLang() {
+    return JSON.parse(
+        fs.readFileSync(__dirname + "\\const\\lang.json", "utf8")
+    );
+}
+
 module.exports = {
     gridSetting,
     actionLogSetting,
@@ -77,5 +83,6 @@ module.exports = {
     writeActionLogNotiSetting,
     actionLogNotiSetting,
     writeAppSetting,
-    appSetting
+    appSetting,
+    loadLang
 }
