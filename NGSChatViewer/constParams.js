@@ -1,5 +1,3 @@
-const { app } = require("electron");
-
 const appName = "PSO2NGS Chat LogViewer";
 const releaseNum = "2021.08.16";
 
@@ -19,46 +17,10 @@ const webPreferences = {
 
 const about = {
     applicationName: appName, // アプリ名
-    applicationVersion: "バージョン： " + releaseNum, // アプリのバージョン
-    copyright: "作成：4鯖のクソパンダ", // コピーライト
-    credits: "@4649masayoshi", // クレジット
+    applicationVersion: "Ver." + releaseNum, // アプリのバージョン
+    copyright: "MIT Licence", // コピーライト
+    credits: "\nRepository:\ngithub.com/masayoshi4649/PSO2NGSLogViewer", // クレジット
 }
-
-const menu_file = {
-    label: "ファイル",
-    submenu: [
-        {
-            label: "再起動",
-            click() {
-                app.relaunch();
-                app.exit();
-            }
-        },
-        {
-            label: "終了",
-            click() {
-                app.quit();
-            }
-        }
-    ]
-}
-
-
-const menu_help = {
-    label: "ヘルプ",
-    submenu: [
-        {
-            label: appName + " について",
-            role: "about",
-        },
-        {
-            label: "フルスクリーン",
-            role: "togglefullscreen",
-            accelerator: "F11"
-        },
-    ]
-}
-
 
 const menu_dev = {
     label: "開発者",
@@ -76,7 +38,5 @@ module.exports = {
     iconPath,
     webPreferences,
     about,
-    menu_file,
-    menu_help,
     menu_dev
 }

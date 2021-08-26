@@ -1,0 +1,68 @@
+{
+    "menu": {
+        "file": {
+            "mainmenu": {
+                "ja": "ファイル",
+                "en": "File"
+            },
+            "submenu": {
+                "restart": {
+                    "ja": "再起動",
+                    "en": "Restart"
+                },
+                "exit": {
+                    "ja": "終了",
+                    "en": "Exit"
+                }
+            }
+        },
+        "logtime": {
+            "mainmenu": {
+                "ja": "ログ監視期間",
+                "en": "LogWatchTerm"
+            },
+            "submenu": {
+                "hour": {
+                    "ja": "時間",
+                    "en": "Hours"
+                }
+            }
+        },
+        "config": {
+            "mainmenu": {
+                "ja": "設定",
+                "en": "Config"
+            },
+            "submenu": {
+                "actionLogConf": {
+                    "ja": "アクションログ設定",
+                    "en": "ActionLogConfig"
+                },
+                "notificationConf": {
+                    "ja": "通知設定",
+                    "en": "NotificationConfig"
+                },
+                "appConf": {
+                    "ja": "アプリ設定",
+                    "en": "ApplicationConfig"
+                }
+            }
+        },
+        "help": {
+            "mainmenu": {
+                "ja": "ヘルプ",
+                "en": "Help"
+            },
+            "submenu": {
+                "about": {
+                    "ja": "PSO2NGSActionLogViewer について",
+                    "en": "About PSO2NGSActionLogViewer"
+                },
+                "fullScreen": {
+                    "ja": "フルスクリーン",
+                    "en": "FullScreen"
+                }
+            }
+        }
+    }
+}

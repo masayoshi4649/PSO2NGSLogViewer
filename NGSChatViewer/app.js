@@ -15,36 +15,74 @@ const viewTime = [1, 2, 3, 4, 5, 6, 9, 12, 24, 48, 72, 168, 720];
 const maxDisplayTime = Math.max(...viewTime);
 
 // デフォルト表示期間(時間)
-let displaySelectTime = Math.min(...viewTime);;
+let displaySelectTime = Math.min(...viewTime);
+
+// アプリ設定
+const appSetting = setting.appSetting();
+const userLang = appSetting["lang"];
+
+// 言語データ
+const label = setting.loadLang();
 
 const menuTemplate = [
-    constParams.menu_file,
     {
-        label: "ログ監視期間",
+        label: label["menu"]["file"]["mainmenu"][userLang],
+        submenu: [
+            {
+                label: label["menu"]["file"]["submenu"]["restart"][userLang],
+                click() {
+                    app.relaunch();
+                    app.exit();
+                }
+            },
+            {
+                label: label["menu"]["file"]["submenu"]["exit"][userLang],
+                click() {
+                    app.quit();
+                }
+            }
+        ]
+    },
+    {
+        label: label["menu"]["logtime"]["mainmenu"][userLang],
         submenu: menuFileTime(),
     },
     {
-        label: "設定",
+        label: label["menu"]["config"]["mainmenu"][userLang],
         submenu: [{
-            label: "チャットログ設定",
+            label: label["menu"]["config"]["submenu"]["chatLogConf"][userLang],
             click() {
                 openChatSettingWindow();
             }
         },
         {
-            label: "通知設定",
+            label: label["menu"]["config"]["submenu"]["notificationConf"][userLang],
             click() {
                 openChatNotiSettingWindow();
             }
-        }, {
-            label: "アプリ設定",
+        },
+        {
+            label: label["menu"]["config"]["submenu"]["appConf"][userLang],
             click() {
                 openAppSettingWindow();
             }
         }]
     },
-    constParams.menu_help,
-    constParams.menu_dev
+    {
+        label: label["menu"]["help"]["mainmenu"][userLang],
+        submenu: [
+            {
+                label: label["menu"]["help"]["submenu"]["about"][userLang],
+                role: "about",
+            },
+            {
+                label: label["menu"]["help"]["submenu"]["fullScreen"][userLang],
+                role: "togglefullscreen",
+                accelerator: "F11"
+            },
+        ]
+    },
+    // constParams.menu_dev
 ]
 
 // メニュー
@@ -65,7 +103,6 @@ app.on("window-all-closed", function () {
 
 // Electronの初期化完了後に実行
 app.on("ready", function () {
-    const appSetting = setting.appSetting();
     mainWindow = new BrowserWindow({
         title: constParams.appName,
         icon: __dirname + constParams.iconPath,
@@ -334,7 +371,7 @@ function menuFileTime() {
 
     for (let i = 0; i < viewTime.length; i++) {
         submenuArr.push({
-            label: viewTime[i] + " 時間",
+            label: viewTime[i] + " " + label["menu"]["logtime"]["submenu"]["hour"][userLang],
             type: "radio",
             value: viewTime[i],
             click: function (e) {
