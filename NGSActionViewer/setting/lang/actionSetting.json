@@ -1,0 +1,18 @@
+{
+    "Label_ignoreSell": {
+        "ja": "種別:売却 を表示しない",
+        "en": "Hide Type:Sell"
+    },
+    "Label_ignoreGet": {
+        "ja": "種別:取得 を表示しない",
+        "en": "Hide Type:Get"
+    },
+    "Label_ignoreRestaSign": {
+        "ja": "「RestaSign」を表示しない",
+        "en": "Hide 'RestaSign'"
+    },
+    "Label_ignoreReverserSign": {
+        "ja": "「ReverserSign」を表示しない",
+        "en": "Hide 'ReverserSign'"
+    }
+}

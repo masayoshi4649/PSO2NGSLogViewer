@@ -22,7 +22,7 @@ const appSetting = setting.appSetting();
 const userLang = appSetting["lang"];
 
 // 言語データ
-const label = setting.loadLang();
+const label = setting.loadAppLang();
 
 const menuTemplate = [
     {
@@ -148,6 +148,10 @@ function openActionSettingWindow() {
     // 現在の設定
     actionSettingWindow.once("ready-to-show", () => {
         actionSettingWindow.webContents.send("currentSetting", setting.actionLogSetting());
+        actionSettingWindow.webContents.send("displabel", {
+            label: setting.loadActionSettingWindowLang(),
+            userLang: userLang
+        });
     })
 }
 
@@ -168,6 +172,10 @@ function openActionNotiSettingWindow() {
     // 現在の設定
     actionNotiSettingWindow.once("ready-to-show", () => {
         actionNotiSettingWindow.webContents.send("currentSetting", setting.actionLogNotiSetting());
+        actionNotiSettingWindow.webContents.send("displabel", {
+            label: setting.loadNotiWindowLang(),
+            userLang: userLang
+        });
     })
 }
 

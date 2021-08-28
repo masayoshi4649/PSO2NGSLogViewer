@@ -1,0 +1,26 @@
+{
+    "Label_ignoreLobyAction": {
+        "ja": "ロビーアクション を表示しない",
+        "en": "Hide LobyAction"
+    },
+    "Label_ignoreMyFashion": {
+        "ja": "マイファッション を表示しない",
+        "en": "Hide MyFashion"
+    },
+    "Label_ignoreStamp": {
+        "ja": "スタンプ を表示しない",
+        "en": "Hide stamp"
+    },
+    "Label_ignoreUioff": {
+        "ja": "UIOFF を表示しない",
+        "en": "Hide uioff"
+    },
+    "Label_ignoreCameraEye": {
+        "ja": "カメラ目線 を表示しない",
+        "en": "Hide CameraEye"
+    },
+    "Label_ignoreCutin": {
+        "ja": "カットイン を表示しない",
+        "en": "Hide CutIn"
+    }
+}
