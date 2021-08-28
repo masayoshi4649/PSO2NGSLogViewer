@@ -1,5 +1,5 @@
 const appName = "PSO2NGS Action LogViewer";
-const releaseNum = "2021.08.16";
+const releaseNum = "2021.08.28";
 
 const iconPath = "/asset/rappy.png"
 
