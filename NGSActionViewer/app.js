@@ -94,7 +94,14 @@ app.setAboutPanelOptions(constParams.about);
 app.setAppUserModelId(constParams.appName);
 
 // NGSログファイル
-const LOG_NGS = app.getPath("documents") + "\\SEGA\\PHANTASYSTARONLINE2\\log_ngs\\";
+let logDir = "";
+if (appSetting["client"] == "japanese") {
+    logDir = "PHANTASYSTARONLINE2";
+} else if (appSetting["client"] == "global") {
+    logDir = "PHANTASYSTARONLINE2_NA";
+}
+
+const LOG_NGS = app.getPath("documents") + "\\SEGA\\" + logDir + "\\log_ngs\\";
 
 // 全ウィンドウ閉じた場合終了
 app.on("window-all-closed", function () {
@@ -227,9 +234,9 @@ function sendActionLog() {
                 if (ignoreFlag == false) {
                     let actionTypeStr;
                     if (actionTypeIsPickup == true) {
-                        actionTypeStr = "取得";
+                        actionTypeStr = label["actionType"]["get"][userLang];
                     } else if (actionTypeIsDiscard == true) {
-                        actionTypeStr = "売却";
+                        actionTypeStr = label["actionType"]["sell"][userLang];
                     }
 
                     sendActionData.push({
@@ -303,7 +310,11 @@ function getDispTime(data, format) {
 
 // IPC送信_グリッドスタイル
 function ipcSendGridStyle() {
-    mainWindow.webContents.send("gridSetting", setting.gridSetting());
+    mainWindow.webContents.send("gridSetting", {
+        style: setting.gridSetting(),
+        label: setting.loadGridLang(),
+        userLang: userLang
+    });
 }
 
 // IPC送信_新規Action送信

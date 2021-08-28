@@ -17,7 +17,7 @@ ipcRenderer.on("newChat", (e, data) => {
 
         let notiinfo = checkNoti(data[i].content);
         if (notiinfo["noti"] == true) {
-            notify("新着チャット", data[i].content, (!notiinfo["notisound"]));
+            notify("New!", data[i].content, (!notiinfo["notisound"]));
         }
     }
 });
@@ -25,7 +25,7 @@ ipcRenderer.on("newChat", (e, data) => {
 // トースト通知
 function notify(title, mes, silent) {
     new Notification(title, {
-        title: "新着通知",
+        title: "New Chat",
         body: mes,
         silent: silent,
         icon: __dirname + "\\rappy.png",
@@ -39,7 +39,9 @@ const ipcRendererStyle = require("electron").ipcRenderer;
 let styleConf = null;
 
 ipcRendererStyle.on("gridSetting", (e, data) => {
-    styleConf = data;
+    styleConf = data["style"];
+    const userLang = data["userLang"];
+    const label = data["label"];
 
     // ログ変色時間
     const checkSec = styleConf["recentTime"];
@@ -48,27 +50,27 @@ ipcRendererStyle.on("gridSetting", (e, data) => {
     const headerChat = [
         [
             {
-                "caption": "日付",
+                "caption": label["date"][userLang],
                 "width": "120px",
                 "rowSpan": 1
             }, {
-                "caption": "プレイヤー名",
+                "caption": label["playerName"][userLang],
                 "width": "200px",
                 "rowSpan": 1
             },
             {
-                "caption": "内容",
+                "caption": label["content"][userLang],
                 "width": "calc(97.5% - 320px)",
                 "rowSpan": 2
             }
         ],
         [
             {
-                "caption": "時間",
+                "caption": label["time"][userLang],
                 "rowSpan": 1
             },
             {
-                "caption": "プレイヤーID",
+                "caption": label["playerID"][userLang],
                 "field": "playerId",
                 "rowSpan": 1
             }
@@ -102,11 +104,11 @@ ipcRendererStyle.on("gridSetting", (e, data) => {
                     let style = getChatColor(rec.sendTo);
                     style["autoWrapText"] = true;
                     if (rec.content.length <= 18) {
-                        style["font"] = 20 + "px Meiryo UI"
+                        style["font"] = 18 + "px Meiryo UI"
                     } else if (19 < rec.content.length <= 36) {
-                        style["font"] = 17 + "px Meiryo UI"
+                        style["font"] = 15 + "px Meiryo UI"
                     } else {
-                        style["font"] = 14 + "px Meiryo UI"
+                        style["font"] = 13 + "px Meiryo UI"
                     }
 
                     return style;

@@ -1,0 +1,22 @@
+{
+    "date": {
+        "ja": "日付",
+        "en": "Date"
+    },
+    "time": {
+        "ja": "時間",
+        "en": "Time"
+    },
+    "playerName": {
+        "ja": "プレイヤー名",
+        "en": "Player Name"
+    },
+    "playerID": {
+        "ja": "プレイヤーID",
+        "en": "Player ID"
+    },
+    "content": {
+        "ja": "内容",
+        "en": "Chat Content"
+    }
+}
