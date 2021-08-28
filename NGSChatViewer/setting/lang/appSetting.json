@@ -1,0 +1,14 @@
+{
+    "Label_Opacity": {
+        "ja": "不透明度",
+        "en": "Opacity"
+    },
+    "Label_AlwaysOnTop": {
+        "ja": "最前面表示",
+        "en": "Always On Top"
+    },
+    "Label_Client_Version": {
+        "ja": "クライアントバージョン",
+        "en": "Client Version"
+    }
+}

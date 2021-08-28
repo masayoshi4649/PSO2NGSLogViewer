@@ -88,6 +88,12 @@ function loadNotiWindowLang() {
     );
 }
 
+function loadAppSettingWindowLang() {
+    return JSON.parse(
+        fs.readFileSync(__dirname + "\\lang\\appSetting.json", "utf8")
+    );
+}
+
 module.exports = {
     gridSetting,
     chatLogSetting,
@@ -98,5 +104,6 @@ module.exports = {
     appSetting,
     loadAppLang,
     loadChatSettingWindowLang,
-    loadNotiWindowLang
+    loadNotiWindowLang,
+    loadAppSettingWindowLang
 }
