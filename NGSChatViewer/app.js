@@ -200,10 +200,13 @@ function openAppSettingWindow() {
     appSettingWindow.setMenu(null);
     appSettingWindow.loadURL("file://" + __dirname + "/view/appSetting.html");
 
-
     // 現在の設定
     appSettingWindow.once("ready-to-show", () => {
         appSettingWindow.webContents.send("currentSetting", setting.appSetting());
+        appSettingWindow.webContents.send("displabel", {
+            label: setting.loadAppSettingWindowLang(),
+            userLang: userLang
+        });
     })
 }
 

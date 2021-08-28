@@ -9,26 +9,33 @@
 
 <body>
     <div>
+        <select id="language">
+            <option value="en">英語 / English</option>
+            <option value="ja">日本語 / Japanese</option>
+        </select>
         <label for="language">
-            <select id="language">
-                <option value="en">English</option>
-                <option value="ja">日本語</option>
-            </select>
-            言語
+            言語 / Language
         </label>
     </div>
 
     <div>
-        <label for="opacity">
-            <input type="range" id="opacity" min="10" max="100" />
-            不透明度
+        <select id="client">
+            <option value="global">Global NGS</option>
+            <option value="japanese">Japanese NGS</option>
+        </select>
+        <label for="client" id="Label_Client_Version">
         </label>
     </div>
 
     <div>
-        <label for="alwaysOnTop">
-            <input type="checkbox" id="alwaysOnTop" />
-            最前面表示
+        <input type="range" id="opacity" min="10" max="100" />
+        <label for="opacity" id="Label_Opacity">
+        </label>
+    </div>
+
+    <div>
+        <input type="checkbox" id="alwaysOnTop" />
+        <label for="alwaysOnTop" id="Label_AlwaysOnTop">
         </label>
     </div>
 
