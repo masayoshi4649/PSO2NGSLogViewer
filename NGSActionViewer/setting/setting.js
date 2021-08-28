@@ -70,9 +70,21 @@ function appSetting() {
     return returnJSON;
 }
 
-function loadLang() {
+function loadAppLang() {
     return JSON.parse(
-        fs.readFileSync(__dirname + "\\const\\lang.json", "utf8")
+        fs.readFileSync(__dirname + "\\lang\\main.json", "utf8")
+    );
+}
+
+function loadActionSettingWindowLang() {
+    return JSON.parse(
+        fs.readFileSync(__dirname + "\\lang\\actionSetting.json", "utf8")
+    );
+}
+
+function loadNotiWindowLang() {
+    return JSON.parse(
+        fs.readFileSync(__dirname + "\\lang\\notification.json", "utf8")
     );
 }
 
@@ -84,5 +96,7 @@ module.exports = {
     actionLogNotiSetting,
     writeAppSetting,
     appSetting,
-    loadLang
+    loadAppLang,
+    loadActionSettingWindowLang,
+    loadNotiWindowLang
 }

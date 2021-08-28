@@ -1,0 +1,30 @@
+{
+    "Label_Word": {
+        "ja": "文字列",
+        "en": "word"
+    },
+    "Label_MatchType": {
+        "ja": "合致タイプ",
+        "en": "MatchType"
+    },
+    "Label_Sound": {
+        "ja": "通知音",
+        "en": "Sound"
+    },
+    "Label_Delete": {
+        "ja": "削除",
+        "en": "Delete"
+    },
+    "Select_Match_partial": {
+        "ja": "部分一致",
+        "en": "Partial Match"
+    },
+    "Select_Match_perfect": {
+        "ja": "完全一致",
+        "en": "Perfect Match"
+    },
+    "Error_EmpRow": {
+        "ja": "<h2>エラー：空白の行があります</h2>",
+        "en": "<h2>ERROR:Empty Rows are Exists</h2>"
+    }
+}

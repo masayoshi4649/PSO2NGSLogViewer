@@ -35,6 +35,17 @@ ipcRenderer.on("currentSetting", (e, data) => {
     loadCurrentSetting(data);
 });
 
+// ラベルを受信
+ipcRenderer.on("displabel", (e, data) => {
+    const userLang = data["userLang"];
+    const label = data["label"];
+    const labelKeys = Object.keys(label);
+
+    for (let i = 0; i < labelKeys.length; i++) {
+        document.getElementById(labelKeys[i]).innerHTML = label[labelKeys[i]][userLang];
+    }
+});
+
 function loadCurrentSetting(data) {
     ignoreSell.checked = data["ignoreSell"];
     ignoreGet.checked = data["ignoreGet"];
