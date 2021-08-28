@@ -19,7 +19,7 @@ ipcRenderer.on("newAction", (e, data) => {
         if (actionTypeIsPickup == true) {
             let notiinfo = checkNoti(data[i].item_name);
             if (notiinfo["noti"] == true) {
-                notify("新着ドロップ", data[i].item_name, (!notiinfo["notisound"]));
+                notify("New!", data[i].item_name, (!notiinfo["notisound"]));
             }
         }
     }
@@ -28,7 +28,7 @@ ipcRenderer.on("newAction", (e, data) => {
 // トースト通知
 function notify(title, mes, silent) {
     new Notification(title, {
-        title: "新着通知",
+        title: "New Drop",
         body: mes,
         silent: silent,
         icon: __dirname + "\\rappy.png",
@@ -41,7 +41,9 @@ const ipcRendererStyle = require("electron").ipcRenderer;
 let styleConf = null;
 
 ipcRendererStyle.on("gridSetting", (e, data) => {
-    styleConf = data;
+    styleConf = data["style"];
+    const userLang = data["userLang"];
+    const label = data["label"];
 
     // ログ変色時間
     const checkSec = styleConf["recentTime"];
@@ -52,24 +54,24 @@ ipcRendererStyle.on("gridSetting", (e, data) => {
     const headerAction = [
         [
             {
-                "caption": "日付",
+                "caption": label["date"][userLang],
                 "width": "120px",
                 "rowSpan": 1
             },
             {
-                "caption": "種別",
+                "caption": label["actionType"][userLang],
                 "width": "50px",
                 "rowSpan": 2
             },
             {
-                "caption": "アイテム名",
+                "caption": label["itemName"][userLang],
                 "width": "auto",
                 "rowSpan": 2,
                 "width": "calc(95% - 170px)"
             }],
         [
             {
-                "caption": "時間",
+                "caption": label["time"][userLang],
                 "rowSpan": 1
             }
         ]

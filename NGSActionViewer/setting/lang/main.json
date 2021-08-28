@@ -64,5 +64,15 @@
                 }
             }
         }
+    },
+    "actionType": {
+        "get": {
+            "ja": "取得",
+            "en": "Get"
+        },
+        "sell": {
+            "ja": "売却",
+            "en": "Sell"
+        }
     }
 }

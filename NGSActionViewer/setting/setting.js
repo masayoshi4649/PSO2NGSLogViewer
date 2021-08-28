@@ -94,6 +94,12 @@ function loadAppSettingWindowLang() {
     );
 }
 
+function loadGridLang() {
+    return JSON.parse(
+        fs.readFileSync(__dirname + "\\lang\\gridLabel.json", "utf8")
+    );
+}
+
 module.exports = {
     gridSetting,
     actionLogSetting,
@@ -105,5 +111,6 @@ module.exports = {
     loadAppLang,
     loadActionSettingWindowLang,
     loadNotiWindowLang,
-    loadAppSettingWindowLang
+    loadAppSettingWindowLang,
+    loadGridLang
 }

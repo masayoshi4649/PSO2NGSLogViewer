@@ -1,0 +1,18 @@
+{
+    "date": {
+        "ja": "日付",
+        "en": "Date"
+    },
+    "time": {
+        "ja": "時間",
+        "en": "Time"
+    },
+    "actionType": {
+        "ja": "種別",
+        "en": "Type"
+    },
+    "itemName": {
+        "ja": "アイテム名",
+        "en": "Item Name"
+    }
+}
