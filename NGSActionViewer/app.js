@@ -5,6 +5,8 @@ let actionSettingWindow = null;
 let actionNotiSettingWindow = null;
 let appSettingWindow = null;
 const chokidar = require("chokidar");
+const glob = require("glob");
+const fs = require("fs");
 const constParams = require(__dirname + "/constParams");
 const csvParse = require(__dirname + "/csvParse");
 const setting = require(__dirname + "/setting/setting");
@@ -89,19 +91,18 @@ const menuTemplate = [
 const menu = Menu.buildFromTemplate(menuTemplate);
 Menu.setApplicationMenu(menu);
 
-// アプリ情報
+// App Info
 app.setAboutPanelOptions(constParams.about);
 app.setAppUserModelId(constParams.appName);
 
-// NGSログファイル
-let logDir = "";
-if (appSetting["client"] == "japanese") {
-    logDir = "PHANTASYSTARONLINE2";
-} else if (appSetting["client"] == "global") {
-    logDir = "PHANTASYSTARONLINE2_NA";
-}
+// PSO2 Log Directory
+const PSO2_DIR = glob.sync(app.getPath("documents") + "\\SEGA\\PHANTASYSTARONLINE2*")
+    .map(name => ({ name, ctime: fs.statSync(name).ctime }))
+    .sort((a, b) => b.ctime - a.ctime)[0].name
+    .replaceAll('/', '\\');
 
-const LOG_NGS = app.getPath("documents") + "\\SEGA\\" + logDir + "\\log_ngs\\";
+const LOG_CLASSIC = PSO2_DIR.concat("\\log\\");
+const LOG_NGS = PSO2_DIR.concat("\\log_ngs\\");
 
 // 全ウィンドウ閉じた場合終了
 app.on("window-all-closed", function () {
@@ -332,19 +333,17 @@ function changeLogTerm(value) {
 
 // ファイル監視
 function watchFiles() {
-    chokidar.watch(LOG_NGS, {
+    chokidar.watch([LOG_NGS, LOG_CLASSIC], {
         ignored: /[\/\\]\./,
         usePolling: true
     }).on("all", async (e, path) => {
-        // ファイル名
-        let fileName = path.replace(LOG_NGS, "");
-        if (fileName.startsWith("ActionLog") == true) {
+        if (path.indexOf("\\ActionLog") !== -1) {
             // アクションログ
             if (e != "unlink") {
                 let data = await csvParse.readActionLog(path);
                 if (data.length != 0) {
                     let pushData = {
-                        "fileName": fileName,
+                        "path": path,
                         "startTime": new Date(data[0].log_time),
                         "endTime": new Date(data[data.length - 1].log_time),
                         "data": data
@@ -358,12 +357,12 @@ function watchFiles() {
                     } else if (e == "change") {
                         // 前のデータ
                         let olddata = actionLogJSON.filter(function (item) {
-                            if (item.fileName == fileName) return true;
+                            if (item.path == path) return true;
                         });
 
                         // 書き換え
                         actionLogJSON = actionLogJSON.filter(function (item) {
-                            if (item.fileName != fileName) return true;
+                            if (item.path != path) return true;
 
                         });
                         actionLogJSON.push(pushData);
@@ -383,7 +382,7 @@ function watchFiles() {
                 }
             } else if (e == "unlink") {
                 actionLogJSON = actionLogJSON.filter(function (item) {
-                    if (item.fileName != fileName) return true;
+                    if (item.path != path) return true;
                 });
             }
             sendActionLog();
