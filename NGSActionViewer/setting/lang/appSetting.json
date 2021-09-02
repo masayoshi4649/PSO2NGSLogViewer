@@ -6,9 +6,5 @@
     "Label_AlwaysOnTop": {
         "ja": "最前面表示",
         "en": "Always On Top"
-    },
-    "Label_Client_Version": {
-        "ja": "クライアントバージョン",
-        "en": "Client Version"
     }
 }
