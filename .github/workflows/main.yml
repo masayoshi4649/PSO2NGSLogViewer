@@ -1,0 +1,53 @@
+name: CI
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Setup Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Build NGSActionViewer
+        working-directory: NGSActionViewer
+        run: |
+          npm install -D electron-builder
+          .\node_modules\.bin\electron-builder --win --x64
+      - name: Build NGSChatViewer
+        working-directory: NGSChatViewer
+        run: |
+          npm install -D electron-builder
+          .\node_modules\.bin\electron-builder --win --x64
+      - name: Create 7z Files
+        run: |
+          $avdate = ([string](Get-ChildItem ./NGSActionViewer/dist/* -Include *.exe) | Select-String '\d{4}.*\d' | Select-Object -Expand Matches).Value
+          $cvdate = ([string](Get-ChildItem ./NGSChatViewer/dist/* -Include *.exe) | Select-String '\d{4}.*\d' | Select-Object -Expand Matches).Value
+          Rename-Item NGSActionViewer/dist/win-unpacked NGSActionViewer
+          Rename-Item NGSChatViewer/dist/win-unpacked NGSChatViewer
+          7z a -t7z -mx=9 "NGSActionViewer $avdate.7z" ./NGSActionViewer/dist/NGSActionViewer
+          7z a -t7z -mx=9 "NGSChatViewer $cvdate.7z" ./NGSChatViewer/dist/NGSChatViewer
+      - name: Upload NGSActionViewer 7z File
+        uses: actions/upload-artifact@v2
+        with: 
+          name: NGSActionViewer-7z
+          path: NGSActionViewer*.7z
+      - name: Upload NGSActionViewer Setup
+        uses: actions/upload-artifact@v2
+        with: 
+          name: NGSActionViewer-Setup
+          path: NGSActionViewer/dist/NGSActionViewer*.exe
+      - name: Upload NGSChatViewer 7z File
+        uses: actions/upload-artifact@v2
+        with: 
+          name: NGSChatViewer-7z
+          path: NGSChatViewer*.7z
+      - name: Upload NGSChatViewer Setup
+        uses: actions/upload-artifact@v2
+        with: 
+          name: NGSChatViewer-Setup
+          path: NGSChatViewer/dist/NGSChatViewer*.exe
